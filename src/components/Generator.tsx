@@ -3,7 +3,7 @@ import { useThrottleFn } from 'solidjs-use'
 import { generateSignature } from '@/utils/auth'
 import IconClear from './icons/Clear'
 import MessageItem from './MessageItem'
-import ErrorMessageItem from './ErrorMessageItem'
+import ErrorMessageItem from './ './ErrorMessageItem'
 import type { ChatMessage, ErrorMessage } from '@/types'
 
 export default () => {
@@ -15,6 +15,16 @@ export default () => {
   const [controller, setController] = createSignal<AbortController>(null)
   const [isStick, setStick] = createSignal(false)
   const maxHistoryMessages = parseInt(import.meta.env.PUBLIC_MAX_HISTORY_MESSAGES || '99')
+
+  // --- Add new state for selected model ---
+  const [selectedModel, setSelectedModel] = createSignal('gemini-2.0-flash');
+  const availableModels = [
+    { id: 'gemini-2.5-flash-lite', name: 'Flash-Lite (1000 RPD)' },
+    { id: 'gemini-2.0-flash', name: '2.0 Flash (200 RPD)' },
+    { id: 'gemini-2.5-flash', name: '2.5 Flash (250 RPD)' },
+    { id: 'gemini-2.5-pro', name: '2.5 Pro (100 RPD)' },
+  ];
+  // ----------------------------------------
 
   createEffect(() => (isStick() && smoothToBottom()))
 
@@ -33,6 +43,11 @@ export default () => {
 
       if (localStorage.getItem('stickToBottom') === 'stick')
         setStick(true)
+      
+      // --- Add logic to load saved model preference ---
+      if (localStorage.getItem('selectedModel'))
+        setSelectedModel(localStorage.getItem('selectedModel'))
+      // ------------------------------------------------
     } catch (err) {
       console.error(err)
     }
@@ -46,6 +61,9 @@ export default () => {
   const handleBeforeUnload = () => {
     localStorage.setItem('messageList', JSON.stringify(messageList()))
     isStick() ? localStorage.setItem('stickToBottom', 'stick') : localStorage.removeItem('stickToBottom')
+    // --- Save the selected model to localStorage ---
+    localStorage.setItem('selectedModel', selectedModel());
+    // ---------------------------------------------
   }
 
   const handleButtonClick = async() => {
@@ -96,6 +114,9 @@ export default () => {
             t: timestamp,
             m: requestMessageList?.[requestMessageList.length - 1]?.parts[0]?.text || '',
           }),
+          // --- Pass the selected model in the request body ---
+          model: selectedModel(), 
+          // ----------------------------------------------------
         }),
         signal: controller.signal,
       })
@@ -219,6 +240,21 @@ export default () => {
           </div>
         )}
       >
+        {/* --- Add the model selection dropdown menu here --- */}
+        <div class="flex justify-center items-center mt-4">
+            <label for="model-select" class="mr-2 text-sm font-medium text-gray-700">Model:</label>
+            <select
+                id="model-select"
+                value={selectedModel()}
+                onChange={(e) => setSelectedModel(e.target.value)}
+                class="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
+            >
+                <Index each={availableModels}>
+                    {(model) => <option value={model.id}>{model.name}</option>}
+                </Index>
+            </select>
+        </div>
+        {/* -------------------------------------------------- */}
         <div class="gen-text-wrapper">
           <textarea
             ref={inputRef!}
