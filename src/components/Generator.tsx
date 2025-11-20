@@ -244,10 +244,22 @@ export default () => {
         <div class="flex justify-center items-center mt-4">
             <label for="model-select" class="mr-2 text-sm font-medium text-gray-700">Model:</label>
             <select
-                id="model-select"
-                value={selectedModel()}
-                onChange={(e) => setSelectedModel(e.target.value)}
-                class="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm w-48 text-black"
+              id="model-select"
+              value={selectedModel()}
+              onChange={(e) => setSelectedModel(e.target.value)}
+              class="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm w-48"
+              style={{
+                backgroundColor: 'white',
+                color: 'black',
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = 'white'
+                e.currentTarget.style.color = 'black'
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = 'white'
+                e.currentTarget.style.color = 'black'
+              }}
             >
                 <Index each={availableModels}>
                     {(model) => <option value={model.id}>{model.name}</option>}
