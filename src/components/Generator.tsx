@@ -248,22 +248,18 @@ export default () => {
               value={selectedModel()}
               onChange={(e) => setSelectedModel(e.target.value)}
               class="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm w-48"
-              style={{
-                backgroundColor: 'white',
-                color: 'black',
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.backgroundColor = 'white'
-                e.currentTarget.style.color = 'black'
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.backgroundColor = 'white'
-                e.currentTarget.style.color = 'black'
-              }}
+              style={{ color: 'black', backgroundColor: 'white' }}
             >
-                <Index each={availableModels}>
-                    {(model) => <option value={model.id}>{model.name}</option>}
-                </Index>
+              <Index each={availableModels}>
+                {(model) => (
+                  <option
+                    value={model.id}
+                    style={{ color: 'black', backgroundColor: 'white' }}
+                  >
+                    {model.name}
+                  </option>
+                )}
+              </Index>
             </select>
         </div>
         {/* ---------------------------------------------------------------------- */}
