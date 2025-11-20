@@ -16,7 +16,7 @@ export default () => {
   const [isStick, setStick] = createSignal(false)
   const maxHistoryMessages = parseInt(import.meta.env.PUBLIC_MAX_HISTORY_MESSAGES || '99')
 
-  // --- Add new state for selected model ---
+  // --- Add new state for selected model and model list ---
   const [selectedModel, setSelectedModel] = createSignal('gemini-2.0-flash');
   const availableModels = [
     { id: 'gemini-2.5-flash-lite', name: 'Flash-Lite (1000 RPD)' },
@@ -24,7 +24,7 @@ export default () => {
     { id: 'gemini-2.5-flash', name: '2.5 Flash (250 RPD)' },
     { id: 'gemini-2.5-pro', name: '2.5 Pro (100 RPD)' },
   ];
-  // ----------------------------------------
+  // ------------------------------------------------------
 
   createEffect(() => (isStick() && smoothToBottom()))
 
@@ -112,7 +112,7 @@ export default () => {
           pass: storagePassword,
           sign: await generateSignature({
             t: timestamp,
-            m: requestMessageList?.[requestMessageList.length - 1]?.parts[0]?.text || '',
+            m: requestMessageList?.[requestMessageList.length - 1]?.parts?.text || '',
           }),
           // --- Pass the selected model in the request body ---
           model: selectedModel(), 
@@ -240,21 +240,21 @@ export default () => {
           </div>
         )}
       >
-        {/* --- Add the model selection dropdown menu here --- */}
+        {/* --- Add the model selection dropdown menu here with improved styling --- */}
         <div class="flex justify-center items-center mt-4">
             <label for="model-select" class="mr-2 text-sm font-medium text-gray-700">Model:</label>
             <select
                 id="model-select"
                 value={selectedModel()}
                 onChange={(e) => setSelectedModel(e.target.value)}
-                class="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
+                class="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm w-48 text-gray-800"
             >
                 <Index each={availableModels}>
                     {(model) => <option value={model.id}>{model.name}</option>}
                 </Index>
             </select>
         </div>
-        {/* -------------------------------------------------- */}
+        {/* ---------------------------------------------------------------------- */}
         <div class="gen-text-wrapper">
           <textarea
             ref={inputRef!}
