@@ -1,3 +1,4 @@
+// src/pages/api/generate.ts
 import { startChatAndSendMessageStream } from '@/utils/openAI'
 import { verifySignature } from '@/utils/auth'
 import type { APIRoute } from 'astro'
@@ -7,7 +8,7 @@ const passList = sitePassword.split(',') || []
 
 export const post: APIRoute = async(context) => {
   const body = await context.request.json()
-  const { sign, time, messages, pass } = body
+  const { sign, time, messages, pass, model: selectedModel } = body // Destructure 'model'
 
   if (!messages || messages.length === 0 || messages[messages.length - 1].role !== 'user') {
     return new Response(JSON.stringify({
@@ -16,7 +17,7 @@ export const post: APIRoute = async(context) => {
       },
     }), { status: 400 })
   }
-
+  // ... rest of your auth checks ...
   if (sitePassword && !(sitePassword === pass || passList.includes(pass))) {
     return new Response(JSON.stringify({
       error: {
@@ -24,7 +25,6 @@ export const post: APIRoute = async(context) => {
       },
     }), { status: 401 })
   }
-
   if (import.meta.env.PROD && !await verifySignature({ t: time, m: messages[messages.length - 1].parts.map(part => part.text).join('') }, sign)) {
     return new Response(JSON.stringify({
       error: {
@@ -37,11 +37,12 @@ export const post: APIRoute = async(context) => {
     const history = messages.slice(0, -1) // All messages except the last one
     const newMessage = messages[messages.length - 1].parts.map(part => part.text).join('')
 
-    // Start chat and send message with streaming
-    const responseStream = await startChatAndSendMessageStream(history, newMessage)
+    // Pass the selectedModel to the utility function
+    const responseStream = await startChatAndSendMessageStream(history, newMessage, selectedModel)
 
     return new Response(responseStream, { status: 200, headers: { 'Content-Type': 'text/plain; charset=utf-8' } })
   } catch (error) {
+    // ... error handling logic ...
     console.error(error)
     const errorMessage = error.message
     const regex = /https?:\/\/[^\s]+/g
