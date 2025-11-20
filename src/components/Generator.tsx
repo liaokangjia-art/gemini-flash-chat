@@ -247,7 +247,7 @@ export default () => {
                 id="model-select"
                 value={selectedModel()}
                 onChange={(e) => setSelectedModel(e.target.value)}
-                class="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm w-48 text-gray-800"
+                class="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm w-48 text-black"
             >
                 <Index each={availableModels}>
                     {(model) => <option value={model.id}>{model.name}</option>}
